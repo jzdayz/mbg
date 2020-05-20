@@ -13,4 +13,7 @@ public class Arg {
     private String jdbc;
     private String user;
     private String pwd;
+    private String dao;
+    private String model;
+    private String xml;
 }

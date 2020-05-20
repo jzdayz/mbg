@@ -41,17 +41,17 @@ public class MbGenerator {
 
         JavaClientGeneratorConfiguration javaClientGeneratorConfiguration = new JavaClientGeneratorConfiguration();
         javaClientGeneratorConfiguration.setConfigurationType("XMLMAPPER");
-        javaClientGeneratorConfiguration.setTargetPackage("test.dao");
+        javaClientGeneratorConfiguration.setTargetPackage(arg.getDao());
         javaClientGeneratorConfiguration.setTargetProject(DEFAULT);
         context.setJavaClientGeneratorConfiguration(javaClientGeneratorConfiguration);
 
         SqlMapGeneratorConfiguration sqlMapGeneratorConfiguration = new SqlMapGeneratorConfiguration();
         sqlMapGeneratorConfiguration.setTargetProject(DEFAULT);
-        sqlMapGeneratorConfiguration.setTargetPackage("test.xml");
+        sqlMapGeneratorConfiguration.setTargetPackage(arg.getXml());
         context.setSqlMapGeneratorConfiguration(sqlMapGeneratorConfiguration);
 
         JavaModelGeneratorConfiguration javaModelGeneratorConfiguration = new JavaModelGeneratorConfiguration();
-        javaModelGeneratorConfiguration.setTargetPackage("test.model");
+        javaModelGeneratorConfiguration.setTargetPackage(arg.getModel());
         javaModelGeneratorConfiguration.setTargetProject(DEFAULT);
         context.setJavaModelGeneratorConfiguration(javaModelGeneratorConfiguration);
 

@@ -6,6 +6,7 @@ import io.github.jzdayz.mbg.service.MbGenerator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -39,17 +40,24 @@ public class Controller {
 
     @RequestMapping("/mbg")
     public Object g(String jdbc,
+                    String dao,
+                    String model,
+                    String xml,
                     String user,
                     String pwd) throws Exception{
         Arg.ArgBuilder toUse = Arg.builder();
         if (lastUse!=null){
             toUse.pwd(chose(pwd,lastUse.getPwd()))
                     .user(chose(user,lastUse.getUser()))
+                    .dao(chose(dao,lastUse.getDao()))
+                    .xml(chose(xml,lastUse.getXml()))
+                    .model(chose(model,lastUse.getModel()))
                     .jdbc(chose(jdbc,lastUse.getJdbc()));
         }else{
-            toUse = Arg.builder().jdbc(jdbc).user(user).pwd(pwd);
+            toUse = Arg.builder().jdbc(jdbc).user(user).pwd(pwd).dao(dao).model(model).xml(xml);
         }
         Arg arg = toUse.build();
+        filePackage(arg);
         check(arg);
         lastUse = arg;
         persistenceUtils.persistence(lastUse);
@@ -60,8 +68,20 @@ public class Controller {
                 .contentType(APPLICATION_OCTET_STREAM).body(mbGenerator.gen(arg));
     }
 
+    private void filePackage(Arg arg) {
+        if (StringUtils.isEmpty(arg.getDao())){
+            arg.setDao("test.dao");
+        }
+        if (StringUtils.isEmpty(arg.getModel())){
+            arg.setModel("test.model");
+        }
+        if (StringUtils.isEmpty(arg.getXml())){
+            arg.setXml("test.xml");
+        }
+    }
+
     private void check(Arg arg) {
-        if (arg.getJdbc()==null||arg.getPwd()==null||arg.getUser()==null){
+        if (StringUtils.isEmpty(arg.getJdbc())||StringUtils.isEmpty(arg.getPwd())||StringUtils.isEmpty(arg.getUser())){
             throw new RuntimeException("need arg");
         }
     }
