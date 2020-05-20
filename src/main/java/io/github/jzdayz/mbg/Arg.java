@@ -16,4 +16,6 @@ public class Arg {
     private String dao;
     private String model;
     private String xml;
+    private String type;
+    private String mbpPackage;
 }

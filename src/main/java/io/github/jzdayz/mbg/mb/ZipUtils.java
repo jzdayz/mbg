@@ -1,5 +1,6 @@
 package io.github.jzdayz.mbg.mb;
 
+import io.github.jzdayz.mbg.mbp.ThreadLocalUtils;
 import org.mybatis.generator.api.GeneratedJavaFile;
 import org.mybatis.generator.api.GeneratedXmlFile;
 
@@ -18,5 +19,13 @@ public class ZipUtils {
             zp.putNextEntry(new ZipEntry(j.getTargetPackage().replaceAll("\\.","/")+"/"+j.getFileName()));
             zp.write(j.getFormattedContent().getBytes(StandardCharsets.UTF_8));
         }
+    }
+
+    public static void zip(ZipOutputStream zipOutputStream) throws Exception{
+        for (ThreadLocalUtils.Zip zip : ThreadLocalUtils.ZIP_ENTRY.get()) {
+            zipOutputStream.putNextEntry(new ZipEntry(zip.getName()));
+            zipOutputStream.write(zip.getData());
+        }
+        ThreadLocalUtils.ZIP_ENTRY.remove();
     }
 }

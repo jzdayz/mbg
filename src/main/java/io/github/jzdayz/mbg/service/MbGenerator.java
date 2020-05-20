@@ -12,10 +12,16 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.zip.ZipOutputStream;
 
 @Service
-public class MbGenerator {
+public class MbGenerator implements Generator {
+
+    @Override
+    public boolean canProcessor(Type type) {
+        return Objects.equals(Type.MB,type);
+    }
 
     public byte[] gen(Arg arg) throws Exception{
 

@@ -1,0 +1,78 @@
+package io.github.jzdayz.mbg.service;
+
+import com.baomidou.mybatisplus.generator.AutoGenerator;
+import com.baomidou.mybatisplus.generator.config.*;
+import com.baomidou.mybatisplus.generator.config.po.LikeTable;
+import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+import io.github.jzdayz.mbg.Arg;
+import io.github.jzdayz.mbg.mb.ZipUtils;
+import io.github.jzdayz.mbg.mbp.VelocityTemplateEngineCustom;
+import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Objects;
+import java.util.zip.ZipOutputStream;
+
+import static com.baomidou.mybatisplus.generator.config.rules.DateType.ONLY_DATE;
+
+@Service
+public class MbpGenerator implements Generator {
+    @Override
+    public boolean canProcessor(Type type) {
+        return Objects.equals(Type.MBP,type);
+    }
+
+    public byte[] gen(Arg arg) throws Exception{
+        AutoGenerator mpg = new AutoGenerator();
+        // 全局配置
+        GlobalConfig gc = new GlobalConfig();
+        String projectPath = "NONE";
+        gc.setOutputDir(projectPath);
+        gc.setOpen(false);
+        gc.setDateType(ONLY_DATE);
+        gc.setBaseResultMap(true);
+        gc.setBaseColumnList(true);
+        gc.setFileOverride(true);
+        gc.setAuthor("MBP");
+        mpg.setGlobalConfig(gc);
+
+        // 数据源配置
+        DataSourceConfig dsc = new DataSourceConfig();
+        dsc.setUrl(arg.getJdbc());
+        dsc.setDriverName("com.mysql.cj.jdbc.Driver");
+        dsc.setUsername(arg.getUser());
+        dsc.setPassword(arg.getPwd());
+        mpg.setDataSource(dsc);
+
+        // 包配置
+        PackageConfig pc = new PackageConfig();
+        pc.setParent(arg.getMbpPackage());
+        mpg.setPackageInfo(pc);
+
+        // 配置模板
+        TemplateConfig templateConfig = new TemplateConfig();
+        mpg.setTemplate(templateConfig);
+
+        // 策略配置
+        StrategyConfig strategy = new StrategyConfig();
+        strategy.setNaming(NamingStrategy.underline_to_camel);
+        strategy.setColumnNaming(NamingStrategy.underline_to_camel);
+        strategy.setRestControllerStyle(false);
+        // 公共父类
+        strategy.setLikeTable(new LikeTable("%"));
+        mpg.setStrategy(strategy);
+        mpg.setTemplateEngine(new VelocityTemplateEngineCustom());
+        mpg.execute();
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024*1024);
+        try (
+                ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)
+        ){
+            ZipUtils.zip(zipOutputStream);
+            zipOutputStream.flush();
+        }
+        return byteArrayOutputStream.toByteArray();
+    }
+}
