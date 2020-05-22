@@ -3,7 +3,6 @@ package io.github.jzdayz.mbg.web;
 import io.github.jzdayz.mbg.Arg;
 import io.github.jzdayz.mbg.mb.PersistenceUtils;
 import io.github.jzdayz.mbg.service.Generator;
-import io.github.jzdayz.mbg.service.MbGenerator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
