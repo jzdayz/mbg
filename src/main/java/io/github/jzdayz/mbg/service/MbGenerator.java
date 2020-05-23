@@ -1,7 +1,7 @@
 package io.github.jzdayz.mbg.service;
 
 import io.github.jzdayz.mbg.Arg;
-import io.github.jzdayz.mbg.mb.ZipUtils;
+import io.github.jzdayz.mbg.util.ZipUtils;
 import org.mybatis.generator.api.GeneratedJavaFile;
 import org.mybatis.generator.api.GeneratedXmlFile;
 import org.mybatis.generator.api.MyBatisGenerator;
@@ -37,12 +37,13 @@ public class MbGenerator implements Generator {
         jdbcConnectionConfiguration.setConnectionURL(arg.getJdbc());
         jdbcConnectionConfiguration.setUserId(arg.getUser());
         jdbcConnectionConfiguration.setPassword(arg.getPwd());
-        jdbcConnectionConfiguration.setDriverClass("com.mysql.cj.jdbc.Driver");
+        jdbcConnectionConfiguration.setDriverClass(arg.getDbType().getDriver());
         jdbcConnectionConfiguration.addProperty("nullCatalogMeansCurrent","true");
         context.setJdbcConnectionConfiguration(jdbcConnectionConfiguration);
 
         TableConfiguration tableConfiguration = new TableConfiguration(context);
-        tableConfiguration.setTableName("%");
+        tableConfiguration.setTableName(arg.getTable());
+        tableConfiguration.setCatalog(arg.getCatalog());
         context.addTableConfiguration(tableConfiguration);
 
         JavaClientGeneratorConfiguration javaClientGeneratorConfiguration = new JavaClientGeneratorConfiguration();

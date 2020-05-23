@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'io.github.jzdayz'
-version = '0.0.2'
+version = '0.0.3'
 sourceCompatibility = '1.8'
 
 configurations {
@@ -16,13 +16,16 @@ configurations {
 
 repositories {
     mavenCentral()
+    flatDir name: 'libs', dirs: "$projectDir/src/main/resources/libs"
 }
 
 dependencies {
+    implementation name: 'ojdbc6'
     implementation 'org.apache.velocity:velocity-engine-core:2.2'
     implementation 'com.baomidou:mybatis-plus-generator:3.3.1.tmp'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.mybatis.generator:mybatis-generator-core:1.4.0'
+    implementation 'com.microsoft.sqlserver:mssql-jdbc:8.2.2.jre8'
     implementation 'mysql:mysql-connector-java:8.0.20'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

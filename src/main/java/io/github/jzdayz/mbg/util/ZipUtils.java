@@ -1,6 +1,5 @@
-package io.github.jzdayz.mbg.mb;
+package io.github.jzdayz.mbg.util;
 
-import io.github.jzdayz.mbg.mbp.ThreadLocalUtils;
 import org.mybatis.generator.api.GeneratedJavaFile;
 import org.mybatis.generator.api.GeneratedXmlFile;
 

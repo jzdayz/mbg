@@ -1,8 +1,8 @@
 package io.github.jzdayz.mbg.web;
 
 import io.github.jzdayz.mbg.Arg;
-import io.github.jzdayz.mbg.mb.PersistenceUtils;
 import io.github.jzdayz.mbg.service.Generator;
+import io.github.jzdayz.mbg.util.PersistenceUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,24 +45,40 @@ public class Controller {
     public Object g(String jdbc,
                     String dao,
                     String model,
+                    String table,
                     String xml,
                     String user,
                     String type,
                     String mbpPackage,
+                    String catalog,
                     String pwd) throws Exception{
         type = StringUtils.isEmpty(type) ? "MB" : type;
         Arg.ArgBuilder toUse = Arg.builder();
         if (lastUse!=null){
             toUse.pwd(chose(pwd,lastUse.getPwd()))
+                    .table(table)
+                    .catalog(catalog)
                     .user(chose(user,lastUse.getUser()))
                     .dao(chose(dao,lastUse.getDao()))
                     .xml(chose(xml,lastUse.getXml()))
                     .type(chose(type,lastUse.getType()))
                     .mbpPackage(chose(mbpPackage,lastUse.getMbpPackage()))
                     .model(chose(model,lastUse.getModel()))
+                    .dbType(jdbcTypeDeduce(jdbc))
                     .jdbc(chose(jdbc,lastUse.getJdbc()));
         }else{
-            toUse = Arg.builder().jdbc(jdbc).user(user).pwd(pwd).dao(dao).model(model).xml(xml).type(type).mbpPackage(mbpPackage);
+            toUse = Arg.builder()
+                    .jdbc(jdbc)
+                    .catalog(catalog)
+                    .user(user)
+                    .pwd(pwd)
+                    .dao(dao)
+                    .model(model)
+                    .table(table)
+                    .xml(xml)
+                    .type(type)
+                    .dbType(jdbcTypeDeduce(jdbc))
+                    .mbpPackage(mbpPackage);
         }
         Arg arg = toUse.build();
         filePackage(arg);
@@ -98,6 +114,19 @@ public class Controller {
         if (StringUtils.isEmpty(arg.getMbpPackage())){
             arg.setMbpPackage("test.package");
         }
+    }
+
+    private Arg.DbType jdbcTypeDeduce(String jdbcUrl){
+        if (jdbcUrl.startsWith("jdbc:mysql")){
+            return Arg.DbType.MYSQL;
+        }
+        if (jdbcUrl.startsWith("jdbc:oracle")){
+            return Arg.DbType.ORACLE;
+        }
+        if (jdbcUrl.startsWith("jdbc:sqlserver")){
+            return Arg.DbType.SQL_SERVER;
+        }
+        throw new RuntimeException("not support");
     }
 
     private void check(Arg arg) {

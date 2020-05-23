@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.generator.config.ConstVal;
 import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
+import com.baomidou.mybatisplus.generator.config.rules.FileType;
 import com.baomidou.mybatisplus.generator.engine.VelocityTemplateEngine;
+import io.github.jzdayz.mbg.util.ThreadLocalUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -12,16 +14,19 @@ import org.apache.velocity.app.VelocityEngine;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Map;
 import java.util.Properties;
-import java.util.zip.ZipEntry;
 
 public class VelocityTemplateEngineCustom extends VelocityTemplateEngine {
 
     private static final String DOT_VM = ".vm";
     private VelocityEngine velocityEngine;
+
+    @Override
+    protected boolean isCreate(FileType fileType, String filePath) {
+        return true;
+    }
 
     @Override
     public VelocityTemplateEngine init(ConfigBuilder configBuilder) {

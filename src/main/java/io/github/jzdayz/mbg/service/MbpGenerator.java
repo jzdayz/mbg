@@ -1,17 +1,16 @@
 package io.github.jzdayz.mbg.service;
 
+import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.config.po.LikeTable;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import io.github.jzdayz.mbg.Arg;
-import io.github.jzdayz.mbg.mb.ZipUtils;
 import io.github.jzdayz.mbg.mbp.VelocityTemplateEngineCustom;
+import io.github.jzdayz.mbg.util.ZipUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Objects;
 import java.util.zip.ZipOutputStream;
 
@@ -41,9 +40,10 @@ public class MbpGenerator implements Generator {
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
         dsc.setUrl(arg.getJdbc());
-        dsc.setDriverName("com.mysql.cj.jdbc.Driver");
+        dsc.setDriverName(arg.getDbType().getDriver());
         dsc.setUsername(arg.getUser());
         dsc.setPassword(arg.getPwd());
+        dsc.setSchemaName(arg.getCatalog());
         mpg.setDataSource(dsc);
 
         // 包配置
@@ -60,8 +60,13 @@ public class MbpGenerator implements Generator {
         strategy.setNaming(NamingStrategy.underline_to_camel);
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);
         strategy.setRestControllerStyle(false);
+        // 微软sqlServer不支持sql过滤
+        if (Objects.equals(DbType.SQL_SERVER,dsc.getDbType())){
+            strategy.setEnableSqlFilter(false);
+            strategy.setInclude(arg.getTable());
+        }
         // 公共父类
-        strategy.setLikeTable(new LikeTable("%"));
+        strategy.setLikeTable(new LikeTable(arg.getTable()));
         mpg.setStrategy(strategy);
         mpg.setTemplateEngine(new VelocityTemplateEngineCustom());
         mpg.execute();

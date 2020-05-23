@@ -1,4 +1,4 @@
-package io.github.jzdayz.mbg.mbp;
+package io.github.jzdayz.mbg.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

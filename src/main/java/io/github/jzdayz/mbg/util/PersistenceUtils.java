@@ -1,4 +1,4 @@
-package io.github.jzdayz.mbg.mb;
+package io.github.jzdayz.mbg.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.jzdayz.mbg.Arg;
