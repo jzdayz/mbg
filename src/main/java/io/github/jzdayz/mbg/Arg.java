@@ -27,7 +27,7 @@ public class Arg {
         SQL_SERVER("com.microsoft.sqlserver.jdbc.SQLServerDriver"),
         ORACLE("oracle.jdbc.driver.OracleDriver");
 
-        private String driver;
+        private final String driver;
 
         DbType(String driver) {
             this.driver = driver;

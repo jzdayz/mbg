@@ -20,9 +20,9 @@ public class Controller {
 
     public static volatile Arg lastUse = null;
 
-    private PersistenceUtils persistenceUtils;
+    private final PersistenceUtils persistenceUtils;
 
-    private List<Generator> generators;
+    private final List<Generator> generators;
 
 
     public Controller(PersistenceUtils persistenceUtils, List<Generator> generators) {

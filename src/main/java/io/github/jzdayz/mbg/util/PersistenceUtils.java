@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class PersistenceUtils {
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
     private String path;
 
     @PostConstruct
@@ -26,8 +26,8 @@ public class PersistenceUtils {
         File file = new File(path);
         if (file.exists()){
             try (
-                    FileInputStream fileInputStream = new FileInputStream(file);
-                    ){
+                    FileInputStream fileInputStream = new FileInputStream(file)
+            ){
                 Controller.lastUse = mapper.readValue(StreamUtils.copyToString(fileInputStream, StandardCharsets.UTF_8), Arg.class);
             }catch (Exception r){
                 r.printStackTrace();
@@ -44,7 +44,7 @@ public class PersistenceUtils {
         File file = new File(path);
         if (!file.exists() && file.createNewFile()){}
         try (
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
+                FileOutputStream fileOutputStream = new FileOutputStream(file)
         ){
             fileOutputStream.write(mapper.writeValueAsBytes(o));
             fileOutputStream.flush();
