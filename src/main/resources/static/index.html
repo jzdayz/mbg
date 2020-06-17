@@ -89,6 +89,7 @@
     let mbpPackage = document.getElementById("mbpPackage");
     let type = document.getElementById("type");
     let table = document.getElementById("table");
+    let catalog = document.getElementById("catalog");
 
 
     function httpGet(theUrl) {
@@ -144,6 +145,7 @@
             dao.value = arg["dao"];
             xml.value = arg["xml"];
             model.value = arg["model"];
+            catalog.value = arg["catalog"];
             mbpPackage.value = arg["mbpPackage"];
             table.value=arg["table"] === window.undefined ? '%' : arg["table"]
             select("type", arg["type"]);

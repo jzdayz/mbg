@@ -1,7 +1,9 @@
 package io.github.jzdayz.mbg.service;
 
 import io.github.jzdayz.mbg.Arg;
+import io.github.jzdayz.mbg.exception.ZipDuplicateFileException;
 import io.github.jzdayz.mbg.util.ZipUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.mybatis.generator.api.GeneratedJavaFile;
 import org.mybatis.generator.api.GeneratedXmlFile;
 import org.mybatis.generator.api.MyBatisGenerator;
@@ -13,8 +15,10 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
+@Slf4j
 @Service
 public class MbGenerator implements Generator {
 
@@ -44,6 +48,7 @@ public class MbGenerator implements Generator {
         TableConfiguration tableConfiguration = new TableConfiguration(context);
         tableConfiguration.setTableName(arg.getTable());
         tableConfiguration.setCatalog(arg.getCatalog());
+        tableConfiguration.setSchema(arg.getCatalog());
         context.addTableConfiguration(tableConfiguration);
 
         JavaClientGeneratorConfiguration javaClientGeneratorConfiguration = new JavaClientGeneratorConfiguration();
@@ -86,8 +91,9 @@ public class MbGenerator implements Generator {
                 ){
             ZipUtils.xmlJavaZip(generatedXmlFiles,generatedJavaFiles,zp);
             zp.flush();
-        }catch (Exception e){
-            e.printStackTrace();
+        } catch (ZipException e){
+            throw new ZipDuplicateFileException(e);
+        } catch (Exception e){
             throw new RuntimeException(e);
         }
         return out.toByteArray();
