@@ -6,6 +6,10 @@ for mybatis(plus) generator with local server
 
 download latest release 
 
+visit http://localhost:10000/index.html
+
+**If a port conflict is detected, visit 10001, and so on**
+
 ### Prerequisites
 
 jdk8+
