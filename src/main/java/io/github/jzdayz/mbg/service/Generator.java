@@ -4,9 +4,9 @@ import io.github.jzdayz.mbg.Arg;
 
 public interface Generator {
 
-    enum Type{MB,MBP}
+  boolean canProcessor(Type type);
 
-    boolean canProcessor(Type type);
+  byte[] gen(Arg arg) throws Exception;
 
-    byte[] gen(Arg arg) throws Exception;
+  enum Type {MB, MBP}
 }

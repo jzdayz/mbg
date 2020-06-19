@@ -7,12 +7,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class MbgApplication {
 
-    static {
-        System.setProperty("server.port", String.valueOf(PortUtils.port()));
-    }
+  static {
+    System.setProperty("server.port", String.valueOf(PortUtils.port()));
+  }
 
-    public static void main(String[] args){
-        SpringApplication.run(MbgApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(MbgApplication.class, args);
+  }
 
 }

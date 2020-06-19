@@ -10,32 +10,33 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class Arg {
-    private String jdbc;
-    private String user;
-    private String catalog;
-    private String pwd;
-    private String dao;
-    private String model;
-    private String xml;
-    private String type;
-    private String table;
-    private String mbpPackage;
-    private DbType dbType;
 
-    public enum DbType{
-        MYSQL("com.mysql.cj.jdbc.Driver"),
-        SQL_SERVER("com.microsoft.sqlserver.jdbc.SQLServerDriver"),
-        ORACLE("oracle.jdbc.driver.OracleDriver");
+  private String jdbc;
+  private String user;
+  private String catalog;
+  private String pwd;
+  private String dao;
+  private String model;
+  private String xml;
+  private String type;
+  private String table;
+  private String mbpPackage;
+  private DbType dbType;
 
-        private final String driver;
+  public enum DbType {
+    MYSQL("com.mysql.cj.jdbc.Driver"),
+    SQL_SERVER("com.microsoft.sqlserver.jdbc.SQLServerDriver"),
+    ORACLE("oracle.jdbc.driver.OracleDriver");
 
-        DbType(String driver) {
-            this.driver = driver;
-        }
+    private final String driver;
 
-
-        public String getDriver() {
-            return driver;
-        }
+    DbType(String driver) {
+      this.driver = driver;
     }
+
+
+    public String getDriver() {
+      return driver;
+    }
+  }
 }
