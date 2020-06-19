@@ -3,6 +3,7 @@ package io.github.jzdayz.mbg.service;
 import static com.baomidou.mybatisplus.generator.config.rules.DateType.ONLY_DATE;
 
 import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
 import com.baomidou.mybatisplus.generator.config.GlobalConfig;
@@ -31,6 +32,7 @@ public class MbpGenerator implements Generator {
     AutoGenerator mpg = new AutoGenerator();
     // 全局配置
     GlobalConfig gc = new GlobalConfig();
+    gc.setIdType(IdType.AUTO);
     String projectPath = "NONE";
     gc.setOutputDir(projectPath);
     gc.setOpen(false);
