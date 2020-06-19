@@ -54,8 +54,6 @@ public class VelocityTemplateEngineCustom extends VelocityTemplateEngine {
     try (
         OutputStreamWriter ow = new OutputStreamWriter(byteArrayOutputStream, ConstVal.UTF8);
         BufferedWriter writer = new BufferedWriter(ow)) {
-      TableInfo table = (TableInfo) objectMap.get("table");
-      table.setConvert(true);
       template.merge(new VelocityContext(objectMap), writer);
     }
     outputFile = outputFile.substring(4);
