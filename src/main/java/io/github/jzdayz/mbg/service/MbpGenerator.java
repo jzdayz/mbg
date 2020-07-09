@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.Objects;
 import java.util.zip.ZipOutputStream;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class MbpGenerator implements Generator {
@@ -32,7 +33,7 @@ public class MbpGenerator implements Generator {
     AutoGenerator mpg = new AutoGenerator();
     // 全局配置
     GlobalConfig gc = new GlobalConfig();
-    gc.setIdType(IdType.AUTO);
+    gc.setIdType(IdType.INPUT);
     String projectPath = "NONE";
     gc.setOutputDir(projectPath);
     gc.setOpen(false);
@@ -49,7 +50,9 @@ public class MbpGenerator implements Generator {
     dsc.setDriverName(arg.getDbType().getDriver());
     dsc.setUsername(arg.getUser());
     dsc.setPassword(arg.getPwd());
-    dsc.setSchemaName(arg.getCatalog());
+    if (!StringUtils.isEmpty(arg.getCatalog())) {
+      dsc.setSchemaName(arg.getCatalog());
+    }
     mpg.setDataSource(dsc);
 
     // 包配置
