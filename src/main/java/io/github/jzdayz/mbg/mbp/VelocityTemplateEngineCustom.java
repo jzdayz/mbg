@@ -33,11 +33,11 @@ public class VelocityTemplateEngineCustom extends VelocityTemplateEngine {
     super.init(configBuilder);
     if (null == velocityEngine) {
       Properties p = new Properties();
-      p.setProperty(ConstVal.VM_LOAD_PATH_KEY, ConstVal.VM_LOAD_PATH_VALUE);
+      p.setProperty("resource.loader.file.class", ConstVal.VM_LOAD_PATH_VALUE);
       p.setProperty(Velocity.FILE_RESOURCE_LOADER_PATH, StringPool.EMPTY);
       p.setProperty(Velocity.ENCODING_DEFAULT, ConstVal.UTF8);
       p.setProperty(Velocity.INPUT_ENCODING, ConstVal.UTF8);
-      p.setProperty("file.resource.loader.unicode", StringPool.TRUE);
+      p.setProperty("resource.loader.file.unicode", StringPool.TRUE);
       velocityEngine = new VelocityEngine(p);
     }
     return this;

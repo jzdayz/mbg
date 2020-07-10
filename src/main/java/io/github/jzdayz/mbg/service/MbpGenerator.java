@@ -80,6 +80,10 @@ public class MbpGenerator implements Generator {
     mpg.setTemplateEngine(new VelocityTemplateEngineCustom());
     mpg.execute();
 
+    if (!ZipUtils.showZip()){
+      return null;
+    }
+
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024 * 1024);
     try (
         ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)

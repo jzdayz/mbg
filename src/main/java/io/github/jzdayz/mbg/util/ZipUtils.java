@@ -30,4 +30,15 @@ public class ZipUtils {
     }
     ThreadLocalUtils.ZIP_ENTRY.remove();
   }
+
+  public static boolean showZip(){
+    List<ThreadLocalUtils.Zip> zips = ThreadLocalUtils.ZIP_ENTRY.get();
+    if ( zips.size() > 0){
+      return true;
+    }else {
+      ThreadLocalUtils.ZIP_ENTRY.remove();
+      return false;
+    }
+  }
+
 }

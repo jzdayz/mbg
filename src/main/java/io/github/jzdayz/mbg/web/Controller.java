@@ -1,11 +1,15 @@
 package io.github.jzdayz.mbg.web;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.jzdayz.mbg.Arg;
 import io.github.jzdayz.mbg.service.Generator;
 import io.github.jzdayz.mbg.util.PersistenceUtils;
 import java.util.List;
+
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @org.springframework.stereotype.Controller
+@AllArgsConstructor
 public class Controller {
 
   public static volatile Arg lastUse = null;
@@ -23,11 +28,8 @@ public class Controller {
 
   private final List<Generator> generators;
 
+  private final ObjectMapper objectMapper;
 
-  public Controller(PersistenceUtils persistenceUtils, List<Generator> generators) {
-    this.persistenceUtils = persistenceUtils;
-    this.generators = generators;
-  }
 
   @RequestMapping("/")
   public Object index() {
@@ -85,11 +87,19 @@ public class Controller {
     check(arg);
     lastUse = arg;
     persistenceUtils.persistence(lastUse);
+
+    byte[] body = choseGen(arg, type);
+    if (body == null){
+      return ResponseEntity.ok()
+              .contentType(APPLICATION_JSON).body(objectMapper.writeValueAsBytes(
+                      "失败，没有找到对应的表"
+              ));
+    }
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mbg.zip\"");
     return ResponseEntity.ok()
         .headers(httpHeaders)
-        .contentType(APPLICATION_OCTET_STREAM).body(choseGen(arg, type));
+        .contentType(APPLICATION_OCTET_STREAM).body(body);
   }
 
   private byte[] choseGen(Arg arg, String type) throws Exception {
