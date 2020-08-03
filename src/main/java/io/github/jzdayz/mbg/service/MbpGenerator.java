@@ -69,6 +69,7 @@ public class MbpGenerator implements Generator {
     strategy.setNaming(NamingStrategy.underline_to_camel);
     strategy.setColumnNaming(NamingStrategy.underline_to_camel);
     strategy.setRestControllerStyle(false);
+    strategy.setEntityTableFieldAnnotationEnable(true);
     // 微软sqlServer不支持sql过滤
     if (Objects.equals(DbType.SQL_SERVER, dsc.getDbType())) {
       strategy.setEnableSqlFilter(false);
