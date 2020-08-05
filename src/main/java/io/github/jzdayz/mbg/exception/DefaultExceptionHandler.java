@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class DefaultExceptionHandler {
-
-  private ObjectMapper objectMapper;
-
-  @ExceptionHandler(Exception.class)
-  public Object defaultE(Exception ex) {
-    log.error("error", ex);
-    return ex;
-  }
-
+    
+    private ObjectMapper objectMapper;
+    
+    @ExceptionHandler(Exception.class)
+    public Object defaultE(Exception ex) {
+        log.error("error", ex);
+        return ex;
+    }
+    
 }
