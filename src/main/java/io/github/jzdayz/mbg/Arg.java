@@ -33,7 +33,9 @@ public class Arg {
     
     private DbType dbType;
     
-    private String swagger2;
+    private boolean swagger2;
+    
+    private boolean lombok;
     
     public enum DbType {
         MYSQL("com.mysql.cj.jdbc.Driver"),

@@ -11,9 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
@@ -43,16 +45,14 @@ public class Controller {
     }
     
     @RequestMapping("/mbg")
-    public Object g(String jdbc, String dao, String model, String table, String xml, String user, String type,
-            String mbpPackage, String swagger2, String catalog, String pwd) throws Exception {
-        type = StringUtils.isEmpty(type) ? "MB" : type;
-        Arg arg = Arg.builder().jdbc(jdbc).catalog(catalog).user(user).pwd(pwd).dao(dao).model(model).table(table)
-                .xml(xml).type(type).dbType(jdbcTypeDeduce(jdbc)).mbpPackage(mbpPackage).swagger2(swagger2).build();
+    public Object g(@RequestParam Map<String,Object> map) throws Exception {
+        Arg arg = objectMapper.readValue(objectMapper.writeValueAsString(map), Arg.class);
         filePackage(arg);
+        arg.setDbType(jdbcTypeDeduce(arg.getJdbc()));
         check(arg);
         lastUse = arg;
         persistenceUtils.persistence(lastUse);
-        byte[] body = choseGen(arg, type);
+        byte[] body = choseGen(arg, arg.getType());
         if (body == null) {
             return ResponseEntity.ok().contentType(APPLICATION_JSON)
                     .body(objectMapper.writeValueAsBytes("失败，没有找到对应的表"));

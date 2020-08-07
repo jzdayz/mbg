@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.generator.config.ConstVal;
 import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
 import com.baomidou.mybatisplus.generator.config.rules.FileType;
+import com.baomidou.mybatisplus.generator.engine.AbstractTemplateEngine;
 import com.baomidou.mybatisplus.generator.engine.VelocityTemplateEngine;
 import io.github.jzdayz.mbg.util.ThreadLocalUtils;
 import org.apache.velocity.Template;
@@ -18,7 +19,7 @@ import java.io.OutputStreamWriter;
 import java.util.Map;
 import java.util.Properties;
 
-public class VelocityTemplateEngineCustom extends VelocityTemplateEngine {
+public class VelocityTemplateEngineCustom extends AbstractTemplateEngine {
     
     private static final String DOT_VM = ".vm";
     
@@ -30,7 +31,7 @@ public class VelocityTemplateEngineCustom extends VelocityTemplateEngine {
     }
     
     @Override
-    public VelocityTemplateEngine init(ConfigBuilder configBuilder) {
+    public AbstractTemplateEngine init(ConfigBuilder configBuilder) {
         super.init(configBuilder);
         if (null == velocityEngine) {
             Properties p = new Properties();
@@ -58,5 +59,19 @@ public class VelocityTemplateEngineCustom extends VelocityTemplateEngine {
         outputFile = outputFile.substring(4);
         ThreadLocalUtils.ZIP_ENTRY.get()
                 .add(ThreadLocalUtils.Zip.builder().data(byteArrayOutputStream.toByteArray()).name(outputFile).build());
+    }
+    
+    @Override
+    public String templateFilePath(String filePath) {
+        if (null == filePath || filePath.contains(DOT_VM)) {
+            return filePath;
+        }
+        return filePath + DOT_VM;
+    }
+    
+    @Override
+    public AbstractTemplateEngine mkdirs() {
+        // nothing to do
+        return this;
     }
 }

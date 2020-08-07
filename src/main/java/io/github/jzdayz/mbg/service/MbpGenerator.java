@@ -43,7 +43,7 @@ public class MbpGenerator implements Generator {
         gc.setBaseColumnList(true);
         gc.setFileOverride(true);
         gc.setAuthor("MBP");
-        gc.setSwagger2(Objects.equals(arg.getSwagger2(),"TRUE"));
+        gc.setSwagger2(arg.isSwagger2());
         mpg.setGlobalConfig(gc);
         
         // 数据源配置
@@ -71,6 +71,7 @@ public class MbpGenerator implements Generator {
         strategy.setNaming(NamingStrategy.underline_to_camel);
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);
         strategy.setRestControllerStyle(false);
+        strategy.setEntityLombokModel(arg.isLombok());
         strategy.setEntityTableFieldAnnotationEnable(true);
         // 微软sqlServer不支持sql过滤
         if (Objects.equals(DbType.SQL_SERVER, dsc.getDbType())) {

@@ -46,13 +46,6 @@
         </select>
       </div>
       <div class="form-group">
-        <label for="type">enable swagger2(if mbp generator)</label>
-        <select class="form-control" id="swagger2" name="swagger2">
-          <option value="FALSE">FALSE</option>
-          <option value="TRUE">TRUE</option>
-        </select>
-      </div>
-      <div class="form-group">
         <label for="dao">dao-package</label>
         <input aria-describedby="emailHelp" class="form-control" id="dao" name="dao"
                placeholder="DAO PACKAGE(not required default value 'test.dao')"
@@ -90,6 +83,20 @@
         <small class="form-text text-muted" id="jdbcHelp">sqlServer not support for mybatis plus generator, but regex is
           working</small>
       </div>
+      <div class="form-group">
+        <div class="custom-control custom-switch">
+          <input type="checkbox" class="custom-control-input" id="swagger" checked="checked">
+          <input name="swagger2" id="swaggerText" hidden="hidden">
+          <label class="custom-control-label" for="swagger">enable swagger2</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="custom-control custom-switch">
+          <input type="checkbox" class="custom-control-input" id="lombok" checked="checked">
+          <input name="lombok" id="lombokText" hidden="hidden">
+          <label class="custom-control-label" for="lombok">enable lombok</label>
+        </div>
+      </div>
       <button class="btn btn-primary" style="width: 100%" type="submit">Submit</button>
     </fieldset>
   </form>
@@ -104,6 +111,12 @@
   let type = document.getElementById("type");
   let table = document.getElementById("table");
   let catalog = document.getElementById("catalog");
+
+  let swagger = document.getElementById("swagger");
+  let swaggerText = document.getElementById("swaggerText");
+
+  let lombok = document.getElementById("lombok");
+  let lombokText = document.getElementById("lombokText");
 
   function httpGet(theUrl) {
     const xmlHttp = new XMLHttpRequest();
@@ -161,13 +174,26 @@
       mbpPackage.value = arg["mbpPackage"];
       table.value = arg["table"] === window.undefined ? '%' : arg["table"]
       select("type", arg["type"]);
-      select("swagger2", arg["swagger2"]);
+      // checkbox
+      swaggerText.value = arg["swagger2"];
+      swagger.checked = arg["swagger2"];
+      // checkbox
+      lombokText.value = arg["lombok"];
+      lombok.checked = arg["lombok"];
     }
     disableWithValue(type.value)
   }
 
   type.addEventListener('change', function (event) {
     disableWithValue(event.target.value)
+  })
+
+  swagger.addEventListener('change', function (event) {
+    swaggerText.value = event.target.checked;
+  })
+
+  lombok.addEventListener('change', function (event) {
+    lombokText.value = event.target.checked;
   })
 
   init_start();
