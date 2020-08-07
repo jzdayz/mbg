@@ -6,6 +6,7 @@ build/
 !**/src/test/**
 NONE
 MB.json
+.DS_Store
 
 ### STS ###
 .apt_generated
