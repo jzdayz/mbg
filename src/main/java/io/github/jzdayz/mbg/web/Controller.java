@@ -23,29 +23,29 @@ import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 @org.springframework.stereotype.Controller
 @AllArgsConstructor
 public class Controller {
-    
+
     public static volatile Arg lastUse = null;
-    
+
     private final PersistenceUtils persistenceUtils;
-    
+
     private final List<Generator> generators;
-    
+
     private final ObjectMapper objectMapper;
-    
-    
+
+
     @RequestMapping("/")
     public Object index() {
         return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).header(HttpHeaders.LOCATION, "/index.html").build();
     }
-    
+
     @ResponseBody
     @GetMapping("/mbJson")
     public Object mbJson() {
         return lastUse;
     }
-    
+
     @RequestMapping("/mbg")
-    public Object g(@RequestParam Map<String,Object> map) throws Exception {
+    public Object g(@RequestParam Map<String, Object> map) throws Exception {
         Arg arg = objectMapper.readValue(objectMapper.writeValueAsString(map), Arg.class);
         filePackage(arg);
         arg.setDbType(jdbcTypeDeduce(arg.getJdbc()));
@@ -61,7 +61,7 @@ public class Controller {
         httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mbg.zip\"");
         return ResponseEntity.ok().headers(httpHeaders).contentType(APPLICATION_OCTET_STREAM).body(body);
     }
-    
+
     private byte[] choseGen(Arg arg, String type) throws Exception {
         for (Generator generator : generators) {
             if (generator.canProcessor(Generator.Type.valueOf(type))) {
@@ -70,7 +70,7 @@ public class Controller {
         }
         throw new RuntimeException("no processor");
     }
-    
+
     private void filePackage(Arg arg) {
         if (StringUtils.isEmpty(arg.getDao())) {
             arg.setDao("test.dao");
@@ -85,7 +85,7 @@ public class Controller {
             arg.setMbpPackage("test.package");
         }
     }
-    
+
     private Arg.DbType jdbcTypeDeduce(String jdbcUrl) {
         if (jdbcUrl.startsWith("jdbc:mysql")) {
             return Arg.DbType.MYSQL;
@@ -98,7 +98,7 @@ public class Controller {
         }
         throw new RuntimeException("not support");
     }
-    
+
     private void check(Arg arg) {
         if (StringUtils.isEmpty(arg.getJdbc()) || StringUtils.isEmpty(arg.getPwd()) || StringUtils
                 .isEmpty(arg.getUser())) {
@@ -107,5 +107,5 @@ public class Controller {
         // check type
         Generator.Type.valueOf(arg.getType());
     }
-    
+
 }

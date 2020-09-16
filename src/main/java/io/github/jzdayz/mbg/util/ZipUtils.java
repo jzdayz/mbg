@@ -9,7 +9,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class ZipUtils {
-    
+
     public static void xmlJavaZip(List<GeneratedXmlFile> xml, List<GeneratedJavaFile> java, ZipOutputStream zp)
             throws Exception {
         for (GeneratedXmlFile x : xml) {
@@ -21,7 +21,7 @@ public class ZipUtils {
             zp.write(j.getFormattedContent().getBytes(StandardCharsets.UTF_8));
         }
     }
-    
+
     public static void zip(ZipOutputStream zipOutputStream) throws Exception {
         for (ThreadLocalUtils.Zip zip : ThreadLocalUtils.ZIP_ENTRY.get()) {
             zipOutputStream.putNextEntry(new ZipEntry(zip.getName()));
@@ -29,7 +29,7 @@ public class ZipUtils {
         }
         ThreadLocalUtils.ZIP_ENTRY.remove();
     }
-    
+
     public static boolean showZip() {
         List<ThreadLocalUtils.Zip> zips = ThreadLocalUtils.ZIP_ENTRY.get();
         if (zips.size() > 0) {
@@ -39,5 +39,5 @@ public class ZipUtils {
             return false;
         }
     }
-    
+
 }

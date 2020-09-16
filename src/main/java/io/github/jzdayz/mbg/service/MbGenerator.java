@@ -7,15 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.mybatis.generator.api.GeneratedJavaFile;
 import org.mybatis.generator.api.GeneratedXmlFile;
 import org.mybatis.generator.api.MyBatisGenerator;
-import org.mybatis.generator.config.CommentGeneratorConfiguration;
-import org.mybatis.generator.config.Configuration;
-import org.mybatis.generator.config.Context;
-import org.mybatis.generator.config.JDBCConnectionConfiguration;
-import org.mybatis.generator.config.JavaClientGeneratorConfiguration;
-import org.mybatis.generator.config.JavaModelGeneratorConfiguration;
-import org.mybatis.generator.config.JavaTypeResolverConfiguration;
-import org.mybatis.generator.config.SqlMapGeneratorConfiguration;
-import org.mybatis.generator.config.TableConfiguration;
+import org.mybatis.generator.config.*;
 import org.mybatis.generator.internal.DefaultShellCallback;
 import org.springframework.stereotype.Service;
 
@@ -29,14 +21,14 @@ import java.util.zip.ZipOutputStream;
 @Slf4j
 @Service
 public class MbGenerator implements Generator {
-    
+
     @Override
     public boolean canProcessor(Type type) {
         return Objects.equals(Type.MB, type);
     }
-    
+
     public byte[] gen(Arg arg) throws Exception {
-        
+
         List<String> warnings = new ArrayList<>();
         boolean overwrite = true;
         Configuration config = new Configuration();
@@ -44,7 +36,7 @@ public class MbGenerator implements Generator {
         context.setId("ID");
         context.setTargetRuntime("MyBatis3");
         String DEFAULT = "DEFAULT";
-        
+
         JDBCConnectionConfiguration jdbcConnectionConfiguration = new JDBCConnectionConfiguration();
         jdbcConnectionConfiguration.setConnectionURL(arg.getJdbc());
         jdbcConnectionConfiguration.setUserId(arg.getUser());
@@ -52,46 +44,46 @@ public class MbGenerator implements Generator {
         jdbcConnectionConfiguration.setDriverClass(arg.getDbType().getDriver());
         jdbcConnectionConfiguration.addProperty("nullCatalogMeansCurrent", "true");
         context.setJdbcConnectionConfiguration(jdbcConnectionConfiguration);
-        
+
         TableConfiguration tableConfiguration = new TableConfiguration(context);
         tableConfiguration.setTableName(arg.getTable());
         tableConfiguration.setCatalog(arg.getCatalog());
         tableConfiguration.setSchema(arg.getCatalog());
         context.addTableConfiguration(tableConfiguration);
-        
+
         JavaClientGeneratorConfiguration javaClientGeneratorConfiguration = new JavaClientGeneratorConfiguration();
         javaClientGeneratorConfiguration.setConfigurationType("XMLMAPPER");
         javaClientGeneratorConfiguration.setTargetPackage(arg.getDao());
         javaClientGeneratorConfiguration.setTargetProject(DEFAULT);
         context.setJavaClientGeneratorConfiguration(javaClientGeneratorConfiguration);
-        
+
         SqlMapGeneratorConfiguration sqlMapGeneratorConfiguration = new SqlMapGeneratorConfiguration();
         sqlMapGeneratorConfiguration.setTargetProject(DEFAULT);
         sqlMapGeneratorConfiguration.setTargetPackage(arg.getXml());
         context.setSqlMapGeneratorConfiguration(sqlMapGeneratorConfiguration);
-        
+
         JavaModelGeneratorConfiguration javaModelGeneratorConfiguration = new JavaModelGeneratorConfiguration();
         javaModelGeneratorConfiguration.setTargetPackage(arg.getModel());
         javaModelGeneratorConfiguration.setTargetProject(DEFAULT);
         context.setJavaModelGeneratorConfiguration(javaModelGeneratorConfiguration);
-        
+
         JavaTypeResolverConfiguration javaTypeResolverConfiguration = new JavaTypeResolverConfiguration();
         javaTypeResolverConfiguration.addProperty("forceBigDecimals", "false");
         context.setJavaTypeResolverConfiguration(javaTypeResolverConfiguration);
-        
+
         CommentGeneratorConfiguration commentGeneratorConfiguration = new CommentGeneratorConfiguration();
         commentGeneratorConfiguration.addProperty("suppressAllComments", "true");
         commentGeneratorConfiguration.addProperty("suppressDate", "true");
         context.setCommentGeneratorConfiguration(commentGeneratorConfiguration);
-        
+
         config.addContext(context);
-        
+
         DefaultShellCallback callback = new DefaultShellCallback(overwrite);
         MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, callback, warnings);
         myBatisGenerator.generate(null, null, null, false);
         List<GeneratedJavaFile> generatedJavaFiles = myBatisGenerator.getGeneratedJavaFiles();
         List<GeneratedXmlFile> generatedXmlFiles = myBatisGenerator.getGeneratedXmlFiles();
-        
+
         ByteArrayOutputStream out = new ByteArrayOutputStream(1024 * 1024);
         try (ZipOutputStream zp = new ZipOutputStream(out)) {
             ZipUtils.xmlJavaZip(generatedXmlFiles, generatedJavaFiles, zp);
@@ -103,5 +95,5 @@ public class MbGenerator implements Generator {
         }
         return out.toByteArray();
     }
-    
+
 }
