@@ -2,18 +2,30 @@ package io.github.jzdayz.mbg.service;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.config.*;
+import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
 import com.baomidou.mybatisplus.generator.config.po.LikeTable;
+import com.baomidou.mybatisplus.generator.config.rules.FileType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+import com.baomidou.mybatisplus.generator.engine.AbstractTemplateEngine;
 import io.github.jzdayz.mbg.Arg;
-import io.github.jzdayz.mbg.mbp.VelocityTemplateEngineCustom;
+import io.github.jzdayz.mbg.util.ThreadLocalUtils;
 import io.github.jzdayz.mbg.util.ZipUtils;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.zip.ZipOutputStream;
 
 import static com.baomidou.mybatisplus.generator.config.rules.DateType.ONLY_DATE;
@@ -48,8 +60,8 @@ public class MbpGenerator implements Generator {
         dsc.setDriverName(arg.getDbType().getDriver());
         dsc.setUsername(arg.getUser());
         dsc.setPassword(arg.getPwd());
-        if (!StringUtils.isEmpty(arg.getCatalog())) {
-            dsc.setSchemaName(arg.getCatalog());
+        if (!StringUtils.isEmpty(arg.getSchema())) {
+            dsc.setSchemaName(arg.getSchema());
         }
         mpg.setDataSource(dsc);
 
@@ -90,5 +102,63 @@ public class MbpGenerator implements Generator {
             zipOutputStream.flush();
         }
         return byteArrayOutputStream.toByteArray();
+    }
+
+
+    private static class VelocityTemplateEngineCustom extends AbstractTemplateEngine {
+
+        private static final String DOT_VM = ".vm";
+
+        private VelocityEngine velocityEngine;
+
+        @Override
+        protected boolean isCreate(FileType fileType, String filePath) {
+            return true;
+        }
+
+        @Override
+        public AbstractTemplateEngine init(ConfigBuilder configBuilder) {
+            super.init(configBuilder);
+            if (null == velocityEngine) {
+                Properties p = new Properties();
+                p.setProperty("resource.loader.file.class", ConstVal.VM_LOAD_PATH_VALUE);
+                p.setProperty(Velocity.FILE_RESOURCE_LOADER_PATH, StringPool.EMPTY);
+                p.setProperty(Velocity.ENCODING_DEFAULT, ConstVal.UTF8);
+                p.setProperty(Velocity.INPUT_ENCODING, ConstVal.UTF8);
+                p.setProperty("resource.loader.file.unicode", StringPool.TRUE);
+                velocityEngine = new VelocityEngine(p);
+            }
+            return this;
+        }
+
+        @Override
+        public void writer(Map<String, Object> objectMap, String templatePath, String outputFile) throws Exception {
+            if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isBlank(templatePath)) {
+                return;
+            }
+            Template template = velocityEngine.getTemplate(templatePath, ConstVal.UTF8);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024 * 1024);
+            try (OutputStreamWriter ow = new OutputStreamWriter(byteArrayOutputStream,
+                    ConstVal.UTF8); BufferedWriter writer = new BufferedWriter(ow)) {
+                template.merge(new VelocityContext(objectMap), writer);
+            }
+            outputFile = outputFile.substring(4);
+            ThreadLocalUtils.ZIP_ENTRY.get()
+                    .add(ThreadLocalUtils.Zip.builder().data(byteArrayOutputStream.toByteArray()).name(outputFile).build());
+        }
+
+        @Override
+        public String templateFilePath(String filePath) {
+            if (null == filePath || filePath.contains(DOT_VM)) {
+                return filePath;
+            }
+            return filePath + DOT_VM;
+        }
+
+        @Override
+        public AbstractTemplateEngine mkdirs() {
+            // nothing to do
+            return this;
+        }
     }
 }

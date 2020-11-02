@@ -15,7 +15,7 @@ public class Arg {
 
     private String user;
 
-    private String catalog;
+    private String schema;
 
     private String pwd;
 

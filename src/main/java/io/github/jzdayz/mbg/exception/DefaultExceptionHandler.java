@@ -17,7 +17,7 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(Exception.class)
     public Object defaultE(Exception ex) {
         log.error("error", ex);
-        return ex;
+        return "生成错误";
     }
 
 }

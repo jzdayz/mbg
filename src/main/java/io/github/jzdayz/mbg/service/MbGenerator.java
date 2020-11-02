@@ -10,6 +10,7 @@ import org.mybatis.generator.api.MyBatisGenerator;
 import org.mybatis.generator.config.*;
 import org.mybatis.generator.internal.DefaultShellCallback;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -47,10 +48,10 @@ public class MbGenerator implements Generator {
 
         TableConfiguration tableConfiguration = new TableConfiguration(context);
         tableConfiguration.setTableName(arg.getTable());
-        tableConfiguration.setCatalog(arg.getCatalog());
-        tableConfiguration.setSchema(arg.getCatalog());
+        if (!StringUtils.isEmpty(arg.getSchema())){
+            tableConfiguration.setSchema(arg.getSchema());
+        }
         context.addTableConfiguration(tableConfiguration);
-
         JavaClientGeneratorConfiguration javaClientGeneratorConfiguration = new JavaClientGeneratorConfiguration();
         javaClientGeneratorConfiguration.setConfigurationType("XMLMAPPER");
         javaClientGeneratorConfiguration.setTargetPackage(arg.getDao());
@@ -83,6 +84,9 @@ public class MbGenerator implements Generator {
         myBatisGenerator.generate(null, null, null, false);
         List<GeneratedJavaFile> generatedJavaFiles = myBatisGenerator.getGeneratedJavaFiles();
         List<GeneratedXmlFile> generatedXmlFiles = myBatisGenerator.getGeneratedXmlFiles();
+        if (generatedJavaFiles.size() == 0){
+            throw new RuntimeException("没有文件生成");
+        }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream(1024 * 1024);
         try (ZipOutputStream zp = new ZipOutputStream(out)) {
