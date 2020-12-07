@@ -11,28 +11,34 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class PersistenceUtils {
 
     private final ObjectMapper mapper;
 
-    private String path;
+    private static final String path = System.getProperty("user.dir") + File.pathSeparator + "MB.json";
+
+    private AtomicReference<Arg> arg = new AtomicReference<>();
 
     public PersistenceUtils(ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
+    public AtomicReference<Arg> getArg() {
+        return arg;
+    }
+
     @PostConstruct
     private void init() {
-        String property = System.getProperty("user.dir");
-        String separator = System.getProperty("file.separator");
-        path = property + separator + "MB.json";
         File file = new File(path);
         if (file.exists()) {
             try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                Controller.lastUse = mapper
-                        .readValue(StreamUtils.copyToString(fileInputStream, StandardCharsets.UTF_8), Arg.class);
+                arg.set(
+                        mapper.readValue(StreamUtils.copyToString(fileInputStream, StandardCharsets.UTF_8), Arg.class)
+                );
             } catch (Exception r) {
                 r.printStackTrace();
                 throw new RuntimeException(r);
@@ -41,6 +47,7 @@ public class PersistenceUtils {
     }
 
     public synchronized void persistence(Arg o) throws Exception {
+        arg.set(o);
         File file = new File(path);
         if (!file.exists() && file.createNewFile()) {
         }

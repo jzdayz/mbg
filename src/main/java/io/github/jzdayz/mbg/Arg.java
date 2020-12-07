@@ -39,6 +39,8 @@ public class Arg {
 
     private boolean lombok;
 
+    private String tableNameFormat;
+
     public enum DbType {
         MYSQL("com.mysql.cj.jdbc.Driver"),
         SQL_SERVER("com.microsoft.sqlserver.jdbc.SQLServerDriver"),

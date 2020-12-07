@@ -3,8 +3,11 @@ package io.github.jzdayz.mbg.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.jzdayz.mbg.Arg;
 import io.github.jzdayz.mbg.service.Generator;
+import io.github.jzdayz.mbg.service.MbpGenerator;
 import io.github.jzdayz.mbg.util.PersistenceUtils;
+import io.github.jzdayz.mbg.util.Utils;
 import lombok.AllArgsConstructor;
+import org.mybatis.generator.api.MyBatisGenerator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,14 +27,11 @@ import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 @AllArgsConstructor
 public class Controller {
 
-    public static volatile Arg lastUse = null;
-
     private final PersistenceUtils persistenceUtils;
 
-    private final List<Generator> generators;
+    private final MbpGenerator mbpGenerator;
 
     private final ObjectMapper objectMapper;
-
 
     @RequestMapping("/")
     public Object index() {
@@ -39,51 +39,25 @@ public class Controller {
     }
 
     @ResponseBody
-    @GetMapping("/mbJson")
-    public Object mbJson() {
-        return lastUse;
+    @GetMapping("/arg")
+    public Object arg() {
+        return persistenceUtils.getArg().get();
     }
 
-    @RequestMapping("/mbg")
-    public Object g(@RequestParam Map<String, Object> map) throws Exception {
+    @RequestMapping("/mybatis-plus")
+    public Object mbpG(@RequestParam Map<String, Object> map) throws Exception {
+
         Arg arg = objectMapper.readValue(objectMapper.writeValueAsString(map), Arg.class);
-        filePackage(arg);
         arg.setDbType(jdbcTypeDeduce(arg.getJdbc()));
-        check(arg);
-        lastUse = arg;
-        persistenceUtils.persistence(lastUse);
-        byte[] body = choseGen(arg, arg.getType());
+        persistenceUtils.persistence(arg);
+
+        byte[] body = mbpGenerator.gen(arg);
         if (body == null) {
             return ResponseEntity.ok().contentType(APPLICATION_JSON)
                     .body(objectMapper.writeValueAsBytes("失败，没有找到对应的表"));
         }
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mbg.zip\"");
-        return ResponseEntity.ok().headers(httpHeaders).contentType(APPLICATION_OCTET_STREAM).body(body);
-    }
 
-    private byte[] choseGen(Arg arg, String type) throws Exception {
-        for (Generator generator : generators) {
-            if (generator.canProcessor(Generator.Type.valueOf(type))) {
-                return generator.gen(arg);
-            }
-        }
-        throw new RuntimeException("no processor");
-    }
-
-    private void filePackage(Arg arg) {
-        if (StringUtils.isEmpty(arg.getDao())) {
-            arg.setDao("test.dao");
-        }
-        if (StringUtils.isEmpty(arg.getModel())) {
-            arg.setModel("test.model");
-        }
-        if (StringUtils.isEmpty(arg.getXml())) {
-            arg.setXml("test.xml");
-        }
-        if (StringUtils.isEmpty(arg.getMbpPackage())) {
-            arg.setMbpPackage("test.package");
-        }
+        return Utils.fileResponse(body,null);
     }
 
     private Arg.DbType jdbcTypeDeduce(String jdbcUrl) {
@@ -97,15 +71,6 @@ public class Controller {
             return Arg.DbType.SQL_SERVER;
         }
         throw new RuntimeException("not support");
-    }
-
-    private void check(Arg arg) {
-        if (StringUtils.isEmpty(arg.getJdbc()) || StringUtils.isEmpty(arg.getPwd()) || StringUtils
-                .isEmpty(arg.getUser())) {
-            throw new RuntimeException("need arg");
-        }
-        // check type
-        Generator.Type.valueOf(arg.getType());
     }
 
 }

@@ -7,11 +7,14 @@ import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
 import com.baomidou.mybatisplus.generator.config.po.LikeTable;
+import com.baomidou.mybatisplus.generator.config.po.TableField;
+import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.FileType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.AbstractTemplateEngine;
 import io.github.jzdayz.mbg.Arg;
 import io.github.jzdayz.mbg.util.ThreadLocalUtils;
+import io.github.jzdayz.mbg.util.Utils;
 import io.github.jzdayz.mbg.util.ZipUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -88,6 +91,22 @@ public class MbpGenerator implements Generator {
         }
         // 公共父类
         strategy.setLikeTable(new LikeTable(arg.getTable()));
+        strategy.setNameConvert(new INameConvert() {
+
+            // 这些都是原本的
+            @Override
+            public String entityNameConvert(TableInfo tableInfo) {
+                return arg.getTableNameFormat().replaceAll(
+                        "\\$\\{entity}"
+                        ,NamingStrategy.capitalFirst(Utils.processName(tableInfo.getName(),strategy.getNaming(), strategy.getTablePrefix())));
+            }
+            // 这些都是原本的
+            @Override
+            public String propertyNameConvert(TableField field) {
+                return Utils.processName(field.getName(),strategy.getColumnNaming(),strategy.getFieldPrefix());
+            }
+
+        });
         mpg.setStrategy(strategy);
         mpg.setTemplateEngine(new VelocityTemplateEngineCustom());
         mpg.execute();
@@ -118,6 +137,7 @@ public class MbpGenerator implements Generator {
 
         @Override
         public AbstractTemplateEngine init(ConfigBuilder configBuilder) {
+            configBuilder.getPathInfo().remove(ConstVal.CONTROLLER_PATH);
             super.init(configBuilder);
             if (null == velocityEngine) {
                 Properties p = new Properties();
@@ -161,4 +181,5 @@ public class MbpGenerator implements Generator {
             return this;
         }
     }
+
 }
