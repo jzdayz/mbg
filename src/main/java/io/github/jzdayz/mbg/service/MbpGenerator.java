@@ -161,6 +161,7 @@ public class MbpGenerator implements Generator {
                     .ifPresent(e->{
                         final TableInfo ti = (TableInfo) e;
                         ti.getFields().forEach(ee->ee.setConvert(true));
+                        ti.setImportPackages(com.baomidou.mybatisplus.annotation.TableField.class.getCanonicalName());
                     });
             Template template = velocityEngine.getTemplate(templatePath, ConstVal.UTF8);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024 * 1024);
