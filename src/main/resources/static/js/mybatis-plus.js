@@ -22,7 +22,7 @@ function httpGet(theUrl) {
 function select(selectId, optionValToSelect) {
     const selectElement = document.getElementById(selectId);
     const selectOptions = selectElement.options;
-    for (let opt, j = 0; opt === selectOptions[j]; j++) {
+    for (let opt, j = 0; opt = selectOptions[j]; j++) {
         if (opt.value === optionValToSelect) {
             selectElement.selectedIndex = j;
             break;
