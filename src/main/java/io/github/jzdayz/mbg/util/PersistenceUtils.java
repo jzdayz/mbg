@@ -19,7 +19,7 @@ public class PersistenceUtils {
 
     private final ObjectMapper mapper;
 
-    private static final String path = System.getProperty("user.dir") + File.pathSeparator + "MB.json";
+    private static final String path = System.getProperty("user.dir") + File.separator + "MB.json";
 
     private AtomicReference<Arg> arg = new AtomicReference<>();
 
