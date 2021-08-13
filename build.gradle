@@ -16,11 +16,10 @@ configurations {
 
 repositories {
     mavenCentral()
-    flatDir name: 'libs', dirs: "$projectDir/src/main/resources/libs"
 }
 
 dependencies {
-    implementation name: 'ojdbc6'
+    implementation 'com.oracle.database.jdbc:ojdbc6:11.2.0.4'
     implementation 'org.apache.velocity:velocity-engine-core:2.2'
     implementation 'com.baomidou:mybatis-plus-generator:3.4.0'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
